@@ -42,8 +42,8 @@ export const register = asyncHandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User with username or email already exists");
   }
+  const profileImageLocalPath = req.file.filename;
 
-  const profileImageLocalPath = req.files?.profileImage[0]?.path;
 
   if (!profileImageLocalPath) {
     throw new ApiError(400, "Profile Image is required");
