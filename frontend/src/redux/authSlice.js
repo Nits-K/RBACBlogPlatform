@@ -1,26 +1,98 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axiosInstance } from '../utils/constant';
+
+// Login user
+export const loginUser = createAsyncThunk(
+  "auth/loginUser",
+  async (formData) => {
+    try {
+      const response = await axiosInstance.post("/users/login", formData);
+      const { user, token } = response.data.data;
+      return { user, token };
+    } catch (error) {
+      
+    }
+  }
+);
+
+// Register user
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/users/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data.data; // contains { user, token }
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data ||
+        error.message ||
+        "Registration failed";
+      return rejectWithValue(message);
+    }
+  }
+);
+
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState: {
+    user: JSON.parse(localStorage.getItem("user")) || null,
+    token: localStorage.getItem("token") || null,
     loading: false,
-    user: JSON.parse(localStorage.getItem("user")) || null,  // Check localStorage for user data
+    error: null,
   },
   reducers: {
-    setLoading: (state, action) => {
-      state.loading = action.payload;
+    logout: (state) => {
+      state.user = null;
+      state.token = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     },
     setUser: (state, action) => {
-      // Storing user data and token in localStorage
       state.user = action.payload;
-      if (action.payload) {
-        localStorage.setItem("user", JSON.stringify(action.payload));  // Save to localStorage
-      } else {
-        localStorage.removeItem("user");  // Remove from localStorage on logout
-      }
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('token', action.payload.token);
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Registration failed";
+      });
+      
   },
 });
 
-export const { setLoading, setUser } = authSlice.actions;
+export const { logout, setUser } = authSlice.actions;
 export default authSlice.reducer;

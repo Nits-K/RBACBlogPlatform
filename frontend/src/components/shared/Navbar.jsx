@@ -9,27 +9,22 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { User2, LogOut } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../../redux/authSlice";
+import { logout } from "../../redux/authSlice";
 import { toast } from "sonner";
 
 const Navbar = () => {
-  const { user } = useSelector((store) => store.auth); // Get user data from Redux store
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Handle logout functionality for JWT
-  const logOutHandler =  () => {
-    // Remove the JWT token from localStorage (or sessionStorage if you're using that)
-    localStorage.removeItem("token"); // or sessionStorage.removeItem("token");
-
-    // Reset user state in Redux store (clear any user data)
-    dispatch(setUser(null));
-
-    // Redirect to home page or login page
-    navigate("/");
-
-    // Display a success message
-    toast.success("You have logged out successfully!");
+  const handleLogout = () => {
+    try {
+      dispatch(logout());
+      navigate("/");
+      toast.success("Logged out successfully");
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
   };
 
   return (
@@ -42,12 +37,11 @@ const Navbar = () => {
         </div>
         <div className="flex items-center gap-12">
           <ul className="flex font-medium text-white items-center gap-6">
-            {/* Conditional navigation links based on user role */}
-            {user && user.role === "admin" ? (
+            {user?.role === "admin" ? (
               <>
                 <li>
                   <Link
-                    to="/blog"
+                    to="/admin/blogs"
                     className="hover:text-yellow-400 transition-colors duration-200"
                   >
                     Manage Blogs
@@ -55,7 +49,7 @@ const Navbar = () => {
                 </li>
                 <li>
                   <Link
-                    to="/"
+                    to="/admin/users"
                     className="hover:text-yellow-400 transition-colors duration-200"
                   >
                     Manage Users
@@ -74,25 +68,26 @@ const Navbar = () => {
                 </li>
                 <li>
                   <Link
-                    to="/"
+                    to="/blogs"
                     className="hover:text-yellow-400 transition-colors duration-200"
                   >
                     Blogs
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/"
-                    className="hover:text-yellow-400 transition-colors duration-200"
-                  >
-                    About Us
-                  </Link>
-                </li>
+                {user && (
+                  <li>
+                    <Link
+                      to="/my-blogs"
+                      className="hover:text-yellow-400 transition-colors duration-200"
+                    >
+                      My Blogs
+                    </Link>
+                  </li>
+                )}
               </>
             )}
           </ul>
 
-          {/* Display login/signup buttons if the user is not logged in */}
           {!user ? (
             <div className="flex items-center gap-4">
               <Link to="/login">
@@ -112,39 +107,44 @@ const Navbar = () => {
           ) : (
             <Popover>
               <PopoverTrigger>
-                {/* Profile Avatar displayed for logged-in user */}
                 <Avatar className="cursor-pointer border-2 border-white">
-                  <AvatarImage src={user.profileImage} alt="Profile" />
+                  <AvatarImage 
+                    src={user.profileImage || `/default-avatar.png`} 
+                    alt={user.name} 
+                  />
                 </Avatar>
               </PopoverTrigger>
               <PopoverContent className="w-80 bg-white text-gray-800 p-4 rounded-lg shadow-lg">
                 <div>
                   <div className="flex gap-2 space-y-2">
                     <Avatar className="cursor-pointer border-2 border-purple-500">
-                      <AvatarImage src={user.profileImage} alt="Profile" />
+                      <AvatarImage 
+                        src={user.profileImage || `/default-avatar.png`} 
+                        alt={user.name} 
+                      />
                     </Avatar>
                     <div>
                       <h4 className="font-semibold text-lg">{user.name}</h4>
+                      <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   </div>
-                  <div className="flex flex-col my-2">
-                    {/* View Profile option only for regular users */}
-                    {user && user.role === "user" && (
-                      <div className="flex w-fit items-center gap-2 cursor-pointer">
-                        <User2 />
-                        {/* <Button variant="link">
-                          <Link to="/profile">View Profile</Link>
-                        </Button> */}
-                      </div>
+                  <div className="flex flex-col gap-2 mt-4">
+                    {user.role === "user" && (
+                      <Link 
+                        to="/profile" 
+                        className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors"
+                      >
+                        <User2 size={18} />
+                        <span>View Profile</span>
+                      </Link>
                     )}
-
-                    {/* Logout functionality */}
-                    <div className="flex w-fit items-center gap-2 cursor-pointer text-red-500">
-                      <LogOut />
-                      <Button onClick={logOutHandler} variant="link">
-                        Logout
-                      </Button>
-                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center gap-2 text-red-500 hover:text-red-600 transition-colors"
+                    >
+                      <LogOut size={18} />
+                      <span>Logout</span>
+                    </button>
                   </div>
                 </div>
               </PopoverContent>

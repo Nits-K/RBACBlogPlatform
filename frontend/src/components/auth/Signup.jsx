@@ -3,12 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useDispatch } from "react-redux";
-import { setUser, setLoading } from "../../redux/authSlice";
-import axios from "axios";
-import { USER_API_END_POINT } from "../../utils/constant";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser, setUser } from "../../redux/authSlice";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -16,72 +14,57 @@ const Signup = () => {
     username: "",
     email: "",
     password: "",
-    profileImage: null,
-    role: "user", // Default to "user" role
+    profileImage: "",
+    role: "",
   });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading } = useSelector((state) => state.auth);
 
-  // Handle form input changes
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-
-    if (type === "file") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: files[0],
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+  const changeEventHandler = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle role change via RadioGroup
-  const handleRoleChange = (value) => {
+  const changeFileHandler = (e) => {
     setFormData((prev) => ({
       ...prev,
-      role: value,
+      profileImage: e.target.files?.[0],
     }));
+  };
+
+  const handleRoleChange = (value) => {
+    setFormData((prev) => ({ ...prev, role: value }));
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    dispatch(setLoading(true));
 
-    const formDataToSend = new FormData();
-    for (let key in formData) {
-      formDataToSend.append(key, formData[key]);
+    const form = new FormData();
+    form.append("name", formData.name);
+    form.append("username", formData.username);
+    form.append("email", formData.email);
+    form.append("password", formData.password);
+
+    if (!formData.profileImage) {
+      toast.error("Profile image is required.");
+      return;
     }
+    form.append("profileImage", formData.profileImage);
+    form.append("role", formData.role);
 
     try {
-      const response = await axios.post(
-        `${USER_API_END_POINT}/signup`,
-        formDataToSend,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const result = await dispatch(registerUser(form)).unwrap();
 
-      const { token, user } = response.data;
-
-      // Save the JWT token in localStorage
-      localStorage.setItem("token", token);
-
-      // Store user details in Redux
-      dispatch(setUser(user));
-
-      dispatch(setLoading(false));
-      navigate("/"); // Redirect to the home page after successful signup
-      toast.success("Signup Successful");
+      if (result.user) {
+        dispatch(setUser({ user: result.user, token: result.token }));
+        toast.success("Registration successful!");
+        navigate("/login");
+      }
     } catch (error) {
-      dispatch(setLoading(false));
-      toast.error("Signup failed");
+      toast.error(error?.message || "Registration failed");
+      console.error("Error during signup:", error);
     }
   };
 
@@ -89,121 +72,103 @@ const Signup = () => {
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center py-12">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl">
         <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">
-          Signup
+          Register
         </h2>
         <form onSubmit={handleSignup} className="space-y-6">
-          {/* Full Name Input */}
           <div>
-            <Label htmlFor="name" className="text-gray-700">
-              Full Name
-            </Label>
+            <Label htmlFor="name">Full Name</Label>
             <Input
               type="text"
-              id="name"
               name="name"
+              id="name"
               value={formData.name}
-              onChange={handleChange}
+              onChange={changeEventHandler}
               placeholder="Enter your full name"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Username Input */}
           <div>
-            <Label htmlFor="username" className="text-gray-700">
-              Username
-            </Label>
+            <Label htmlFor="username">Username</Label>
             <Input
               type="text"
-              id="username"
               name="username"
+              id="username"
               value={formData.username}
-              onChange={handleChange}
+              onChange={changeEventHandler}
               placeholder="Enter your username"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Email Input */}
           <div>
-            <Label htmlFor="email" className="text-gray-700">
-              Email
-            </Label>
+            <Label htmlFor="email">Email</Label>
             <Input
               type="email"
-              id="email"
               name="email"
+              id="email"
               value={formData.email}
-              onChange={handleChange}
+              onChange={changeEventHandler}
               placeholder="Enter your email"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Password Input */}
           <div>
-            <Label htmlFor="password" className="text-gray-700">
-              Password
-            </Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               type="password"
-              id="password"
               name="password"
+              id="password"
               value={formData.password}
-              onChange={handleChange}
+              onChange={changeEventHandler}
               placeholder="Enter your password"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Profile Image Input */}
           <div>
-            <Label htmlFor="profileImage" className="text-gray-700">
-              Profile Image
-            </Label>
+            <Label htmlFor="profileImage">Profile Image</Label>
             <Input
               type="file"
-              id="profileImage"
               name="profileImage"
-              onChange={handleChange}
+              id="profileImage"
+              onChange={changeFileHandler}
               accept="image/*"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
-          {/* Role Selection (Admin or User) */}
           <div>
-            <Label className="text-gray-700 mb-3">Role</Label>
+            <Label className="mb-2">Role</Label>
             <RadioGroup value={formData.role} onValueChange={handleRoleChange}>
-              <div className="flex gap-6 ">
+              <div className="flex gap-6">
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="user" id="user" />
-                  <Label htmlFor="user" className="text-gray-700">
-                    User
-                  </Label>
+                  <Label htmlFor="user">User</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="admin" id="admin" />
-                  <Label htmlFor="admin" className="text-gray-700">
-                    Admin
-                  </Label>
+                  <Label htmlFor="admin">Admin</Label>
                 </div>
               </div>
             </RadioGroup>
           </div>
 
-          {/* Signup Button */}
           <Button
             type="submit"
-            className="w-full py-3 bg-[#F83002] text-white rounded-lg hover:bg-[#D42E01] transition-colors duration-300"
+            disabled={loading}
+            className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
           >
-            Signup
+            {loading ? "Creating Account..." : "Register"}
           </Button>
+
+          <p className="text-center text-gray-600">
+            Already have an account?{" "}
+            <Link to="/login" className="text-purple-600 hover:text-purple-800">
+              Login here
+            </Link>
+          </p>
         </form>
       </div>
     </div>

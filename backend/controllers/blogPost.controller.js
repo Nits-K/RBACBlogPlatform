@@ -12,6 +12,7 @@ export const createBlogPost = asyncHandler(async (req, res) => {
     [title, content, description, category].some(
       (field) => field?.trim() === ""
     )
+    
   ) {
     throw new ApiError(400, "All fields are required");
   }

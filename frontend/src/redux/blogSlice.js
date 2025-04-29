@@ -1,37 +1,117 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { axiosInstance } from '../utils/constant';
+
+export const fetchBlogs = createAsyncThunk(
+  'blogs/fetchBlogs',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get('/blog');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to fetch blogs' });
+    }
+  }
+);
+
+export const createBlog = createAsyncThunk(
+  'blogs/createBlog',
+  async (blogData, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      Object.keys(blogData).forEach(key => {
+        if (blogData[key] !== null) {
+          formData.append(key, blogData[key]);
+        }
+      });
+
+      const response = await axiosInstance.post('/blog/create', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to create blog' });
+    }
+  }
+);
+
+export const updateBlog = createAsyncThunk(
+  'blogs/updateBlog',
+  async ({ id, blogData }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      Object.keys(blogData).forEach(key => {
+        if (blogData[key] !== null) {
+          formData.append(key, blogData[key]);
+        }
+      });
+
+      const response = await axiosInstance.put(`/blog/${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to update blog' });
+    }
+  }
+);
+
+export const deleteBlog = createAsyncThunk(
+  'blogs/deleteBlog',
+  async (id, { rejectWithValue }) => {
+    try {
+      await axiosInstance.delete(`/blog/${id}`);
+      return id;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: 'Failed to delete blog' });
+    }
+  }
+);
 
 const blogSlice = createSlice({
-  name: "blog",
+  name: 'blogs',
   initialState: {
-    allblogs: [],
-    allAdminblogs: [],
-    singleblog: null,
-    searchblogByText: "",
-    searchedQuery:"",
+    blogs: [],
+    loading: false,
+    error: null,
+    currentBlog: null,
   },
   reducers: {
-    setAllblogs: (state, action) => {
-      state.allblogs = action.payload;
-    },
-    setSingleblog: (state, action) => {
-      state.singleblog = action.payload;
-    },
-    setAllAdminblogs: (state, action) => {
-      state.allAdminblogs = action.payload;
-    },
-    setSearchblogByText: (state, action) => {
-      state.searchblogByText = action.payload;
-    },
-    setSearchedQuery: (state, action) => {
-      state.searchedQuery = action.payload;
+    setCurrentBlog: (state, action) => {
+      state.currentBlog = action.payload;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchBlogs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchBlogs.fulfilled, (state, action) => {
+        state.loading = false;
+        state.blogs = action.payload;
+      })
+      .addCase(fetchBlogs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createBlog.fulfilled, (state, action) => {
+        state.blogs.push(action.payload);
+      })
+      .addCase(updateBlog.fulfilled, (state, action) => {
+        const index = state.blogs.findIndex(blog => blog._id === action.payload._id);
+        if (index !== -1) {
+          state.blogs[index] = action.payload;
+        }
+      })
+      .addCase(deleteBlog.fulfilled, (state, action) => {
+        state.blogs = state.blogs.filter(blog => blog._id !== action.payload);
+      });
+  },
 });
-export const {
-  setAllblogs,
-  setSingleblog,
-  setAllAdminblogs,
-  setSearchblogByText,
-  setSearchedQuery,
-} = blogSlice.actions;
+
+export const { setCurrentBlog } = blogSlice.actions;
 export default blogSlice.reducer;

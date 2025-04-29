@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { generateAccessAndRefreshTokens } from "../controllers/user.controller.js";
 
+
 export const isAuthenticated = asyncHandler(async (req, res, next) => {
   try {
     const token =

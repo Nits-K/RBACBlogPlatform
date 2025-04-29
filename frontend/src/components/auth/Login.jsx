@@ -1,65 +1,52 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"; // Import RadioGroup components
-import { useDispatch } from "react-redux";
-import { setUser, setLoading } from "../../redux/authSlice";
-import axios from "axios";
-import { USER_API_END_POINT } from "../../utils/constant";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../redux/authSlice";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  // Initialize a single state object for the form
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "user", // Default role is 'user'
+    role: "user",
   });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error, user } = useSelector((state) => state.auth);
 
-  // Dynamically handle changes in the form inputs
+  useEffect(() => {
+    if (user) {
+      toast.success("Login Successful");
+      navigate(user.role === 'admin' ? '/admin' : '/');
+    }
+  }, [user, navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle role selection change
   const handleRoleChange = (value) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: value,
-    }));
+    setFormData((prev) => ({ ...prev, role: value }));
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    dispatch(setLoading(true));
+
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        `${USER_API_END_POINT}/login`,
-        formData
-      );
-      const { token, user } = response.data;
-
-      // Save the JWT token in localStorage
-      localStorage.setItem("token", token);
-
-      // Store user details in Redux
-      dispatch(setUser(user));
-
-      dispatch(setLoading(false));
-      navigate("/");
-      toast.success("Login Successful");
-    } catch (error) {
-      dispatch(setLoading(false));
-      toast.error("Login failed");
+      await dispatch(loginUser(formData)).unwrap();
+    } catch (err) {
+      toast.error(err?.message || "Invalid credentials");
     }
   };
 
@@ -67,8 +54,14 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center py-12">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl">
         <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">Login</h2>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
+            {error.message || "An error occurred"}
+          </div>
+        )}
+
         <form onSubmit={handleLogin} className="space-y-6">
-          {/* Email Input */}
           <div>
             <Label htmlFor="email" className="text-gray-700">Email</Label>
             <Input
@@ -79,11 +72,11 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your email"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              disabled={loading}
             />
           </div>
 
-          {/* Password Input */}
           <div>
             <Label htmlFor="password" className="text-gray-700">Password</Label>
             <Input
@@ -94,14 +87,14 @@ const Login = () => {
               onChange={handleChange}
               placeholder="Enter your password"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              disabled={loading}
             />
           </div>
 
-          {/* Role Selection */}
           <div>
             <Label className="text-gray-700">Role</Label>
-            <RadioGroup value={formData.role} onValueChange={handleRoleChange}>
+            <RadioGroup value={formData.role} onValueChange={handleRoleChange} disabled={loading}>
               <div className="flex gap-6">
                 <div className="flex items-center gap-2">
                   <RadioGroupItem value="user" id="user" />
@@ -115,13 +108,20 @@ const Login = () => {
             </RadioGroup>
           </div>
 
-          {/* Login Button */}
           <Button
             type="submit"
-            className="w-full py-3 bg-[#F83002] text-white rounded-lg hover:bg-[#D42E01] transition-colors duration-300"
+            className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-300"
+            disabled={loading}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </Button>
+
+          <p className="text-center text-gray-600">
+            Don't have an account?{" "}
+            <Link to="/register" className="text-purple-600 hover:text-purple-700">
+              Register here
+            </Link>
+          </p>
         </form>
       </div>
     </div>
