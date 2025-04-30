@@ -55,6 +55,7 @@ export const register = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Profile image is required");
   }
 
+  
   const user = await User.create({
     name,
     profileImage: profileImage.url,
@@ -82,14 +83,20 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.findOne({
-    $or: [{ username }, { email }],
+    $or: [
+      { email: email?.trim().toLowerCase() },
+      { username: username?.trim().toLowerCase() }
+    ],
   });
+
+  
 
   if (!user) {
     throw new ApiError(404, "User does not exist");
   }
 
   const isPasswordValid = await user.isPasswordCorrect(password);
+
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
@@ -102,7 +109,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true, // make sure to set this to false if you're running locally without HTTPS
+    secure: false, 
   };
 
   // Set cookies and send response
@@ -120,8 +127,10 @@ export const loginUser = asyncHandler(async (req, res) => {
         },
         "User logged in successfully"
       )
+
     );
 });
+
 
 export const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
