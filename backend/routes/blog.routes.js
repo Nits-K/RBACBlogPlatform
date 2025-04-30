@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.post('/create', isAuthenticated, multipleUpload, createBlogPost);
 
+router.get('/getBlogs', getAllBlogPosts);
 router.get('/:id', getBlogPostById);
 
-router.get('/', getAllBlogPosts);
 
 
 router.put('/update/:id', isAuthenticated, multipleUpload, updateBlogPost);
