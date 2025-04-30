@@ -90,9 +90,9 @@ const Navbar = () => {
             <Popover>
               <PopoverTrigger>
                 <Avatar className="cursor-pointer border-2 border-white">
-                  <AvatarImage 
-                    src={user.profileImage || `/default-avatar.png`} 
-                    alt={user.name} 
+                  <AvatarImage
+                    src={user.profileImage || `/default-avatar.png`}
+                    alt={user.name}
                   />
                 </Avatar>
               </PopoverTrigger>
@@ -100,9 +100,9 @@ const Navbar = () => {
                 <div>
                   <div className="flex gap-2 space-y-2">
                     <Avatar className="cursor-pointer border-2 border-purple-500">
-                      <AvatarImage 
-                        src={user.profileImage || `/default-avatar.png`} 
-                        alt={user.name} 
+                      <AvatarImage
+                        src={user.profileImage || `/default-avatar.png`}
+                        alt={user.name}
                       />
                     </Avatar>
                     <div>
@@ -112,8 +112,8 @@ const Navbar = () => {
                   </div>
                   <div className="flex flex-col gap-2 mt-4">
                     {user.role === "user" && (
-                      <Link 
-                        to="/profile" 
+                      <Link
+                        to="/profile"
                         className="flex items-center gap-2 text-gray-700 hover:text-purple-600 transition-colors"
                       >
                         <User2 size={18} />

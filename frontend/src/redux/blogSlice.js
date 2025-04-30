@@ -5,10 +5,8 @@ export const fetchBlogById = createAsyncThunk(
   "blogs/fetchBlogById",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/blog/${id}`); 
-      console.log("Fetched single blog:", action.payload);  // Log the fetched blog data
-
-      return response.data;
+      const response = await axiosInstance.get(`/blog/${id}`);
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data || { message: "Failed to fetch blog by ID" }
@@ -21,8 +19,9 @@ export const fetchBlogs = createAsyncThunk(
   "blogs/fetchBlogs",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/blog/");
-      return response.data.blogs;
+      const response = await axiosInstance.get("/blog/getBlogs");
+      console.log("Fetched blogs from backend:", response.data.data); // ✅ Add this      
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data || { message: "Failed to fetch blogs" }
@@ -47,7 +46,7 @@ export const createBlog = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data || { message: "Failed to create blog" }
@@ -72,7 +71,7 @@ export const updateBlog = createAsyncThunk(
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data || { message: "Failed to update blog" }
@@ -101,7 +100,7 @@ const blogSlice = createSlice({
     blogs: [],
     loading: false,
     error: null,
-    currentBlog: null, 
+    currentBlog: null,
   },
   reducers: {
     setCurrentBlog: (state, action) => {
@@ -116,10 +115,7 @@ const blogSlice = createSlice({
       })
       .addCase(fetchBlogs.fulfilled, (state, action) => {
         state.loading = false;
-        console.log("Fetched blogs:", action.payload);  // Log the response data
-
         state.blogs = Array.isArray(action.payload) ? action.payload : [];
-
       })
       .addCase(fetchBlogs.rejected, (state, action) => {
         state.loading = false;
@@ -131,7 +127,7 @@ const blogSlice = createSlice({
       })
       .addCase(fetchBlogById.fulfilled, (state, action) => {
         state.loading = false;
-        state.currentBlog = action.payload; 
+        state.currentBlog = action.payload;
       })
       .addCase(fetchBlogById.rejected, (state, action) => {
         state.loading = false;
@@ -154,4 +150,3 @@ const blogSlice = createSlice({
 
 export const { setCurrentBlog } = blogSlice.actions;
 export default blogSlice.reducer;
-

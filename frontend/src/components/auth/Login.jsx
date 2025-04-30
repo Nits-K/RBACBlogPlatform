@@ -35,94 +35,79 @@ const Login = () => {
     setFormData((prev) => ({ ...prev, role: value }));
   };
 
-  const handleLogin = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!formData.email || !formData.password) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-
-    try {
-      await dispatch(loginUser(formData)).unwrap();
-    } catch (err) {
-      toast.error(err?.message || "Invalid credentials");
-    }
+    dispatch(loginUser(formData));
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center py-12">
-      <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-xl">
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-8">Login</h2>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
-            {error.message || "An error occurred"}
-          </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div>
-            <Label htmlFor="email" className="text-gray-700">Email</Label>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">Login</h1>
+        <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
+              {error.message || "Invalid credentials"}
+            </div>
+          )}
+          
+          <div className="mb-4">
+            <Label className="block text-sm font-medium text-gray-700">Email</Label>
             <Input
-              type="email"
-              id="email"
               name="email"
+              type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              disabled={loading}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
 
-          <div>
-            <Label htmlFor="password" className="text-gray-700">Password</Label>
+          <div className="mb-4">
+            <Label className="block text-sm font-medium text-gray-700">Password</Label>
             <Input
-              type="password"
-              id="password"
               name="password"
+              type="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
               required
-              className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              disabled={loading}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
 
-          <div>
-            <Label className="text-gray-700">Role</Label>
-            <RadioGroup value={formData.role} onValueChange={handleRoleChange} disabled={loading}>
-              <div className="flex gap-6">
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="user" id="user" />
-                  <Label htmlFor="user" className="text-gray-700">User</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="admin" id="admin" />
-                  <Label htmlFor="admin" className="text-gray-700">Admin</Label>
-                </div>
+          <div className="mb-6">
+            <Label className="block text-sm font-medium text-gray-700">Role</Label>
+            <RadioGroup
+              value={formData.role}
+              onValueChange={handleRoleChange}
+              required
+            >
+              <div className="flex gap-4">
+                <RadioGroupItem value="user" id="user" />
+                <Label htmlFor="user" className="text-sm text-gray-700">User</Label>
+                <RadioGroupItem value="admin" id="admin" />
+                <Label htmlFor="admin" className="text-sm text-gray-700">Admin</Label>
               </div>
             </RadioGroup>
           </div>
 
           <Button
             type="submit"
-            className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-300"
             disabled={loading}
+            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
-
-          <p className="text-center text-gray-600">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-purple-600 hover:text-purple-700">
-              Register here
-            </Link>
-          </p>
         </form>
+
+        <div className="mt-4 text-center">
+          <Link
+            to="/register"
+            className="text-sm text-blue-300 hover:text-blue-700"
+          >
+            Don't have an account? Sign up
+          </Link>
+        </div>
       </div>
     </div>
   );

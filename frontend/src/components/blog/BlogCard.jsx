@@ -17,7 +17,7 @@ const BlogCard = ({ blog }) => {
       <p className="text-gray-600 mb-2">{blog.description}</p>
       <p className="text-sm text-gray-400">Category: {blog.category}</p>
       <button
-        onClick={() => navigate(`/blogs/${blog._id}`)}
+        onClick={() => navigate(`/blog/${blog._id}`)}
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
       >
         Read More

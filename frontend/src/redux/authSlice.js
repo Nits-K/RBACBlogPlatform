@@ -4,13 +4,13 @@ import { axiosInstance } from '../utils/constant';
 // Login user
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
-  async (formData) => {
+  async (formData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post("/users/login", formData);
       const { user, token } = response.data.data;
       return { user, token };
     } catch (error) {
-      
+      return rejectWithValue(error.response?.data || { message: "Login failed" });
     }
   }
 );
@@ -36,7 +36,6 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
-
 
 const authSlice = createSlice({
   name: 'auth',
@@ -90,7 +89,6 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload || "Registration failed";
       });
-      
   },
 });
 

@@ -5,10 +5,9 @@ import Navbar from "../shared/Navbar";
 import Footer from "../shared/Footer";
 import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
-import Blogs from "../blog/Blogs";
 
 const Home = () => {
-  const { user } = useSelector((store) => store.auth);
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,7 +63,6 @@ const Home = () => {
               Read the latest stories from our community
             </p>
           </div>
-          <Blogs /> {/* Displaying some blogs here */}
         </div>
       </div>
 
