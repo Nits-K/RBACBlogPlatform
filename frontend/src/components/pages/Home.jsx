@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
-import Navbar from '../shared/Navbar';
-import Footer from '../shared/Footer';
-import Blogs from '../blog/BlogList';
-import { Button } from '../ui/button';
-import { ArrowRight } from 'lucide-react';
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate, Link } from "react-router-dom";
+import Navbar from "../shared/Navbar";
+import Footer from "../shared/Footer";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
+import Blogs from "../blog/Blogs";
 
 const Home = () => {
-  const { user } = useSelector(store => store.auth);
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user?.role === 'admin') {
+    if (user?.role === "admin") {
       navigate("/admin/");
     }
   }, [user, navigate]);
@@ -20,7 +20,7 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -29,7 +29,8 @@ const Home = () => {
               Welcome to BlogVillage
             </h1>
             <p className="text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-              Discover amazing stories, share your thoughts, and connect with writers from around the world.
+              Discover amazing stories, share your thoughts, and connect with
+              writers from around the world.
             </p>
             {!user && (
               <div className="flex justify-center gap-4">
@@ -39,7 +40,11 @@ const Home = () => {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-purple-600">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="text-white border-white hover:bg-white hover:text-purple-600"
+                  >
                     Get Started
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
@@ -50,36 +55,16 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Categories Section */}
-      <div className="bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Popular Categories</h2>
-            <p className="mt-4 text-gray-600">Explore blogs by your favorite topics</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {['Technology', 'Travel', 'Food', 'Lifestyle'].map((category) => (
-              <Button
-                key={category}
-                variant="outline"
-                className="text-purple-600 border-purple-600 hover:bg-purple-50"
-                onClick={() => navigate(`/blogs?category=${category}`)}
-              >
-                {category}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Featured Blogs */}
       <div className="flex-grow py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Featured Blogs</h2>
-            <p className="mt-4 text-gray-600">Read the latest stories from our community</p>
+            <p className="mt-4 text-gray-600">
+              Read the latest stories from our community
+            </p>
           </div>
-          <Blogs />
+          <Blogs /> {/* Displaying some blogs here */}
         </div>
       </div>
 

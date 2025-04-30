@@ -15,12 +15,12 @@ const Profile = () => {
           <div className="flex flex-col items-center">
             <Avatar className="w-32 h-32 border-4 border-purple-500">
               <AvatarImage
-                src={user?.profileImage || '/default-avatar.png'}
+                src={user?.profileImage}
                 alt={user?.name}
               />
             </Avatar>
             <h1 className="mt-4 text-3xl font-bold">{user?.name}</h1>
-            <p className="text-gray-600">@{user?.username}</p>
+            <p className="text-gray-600">{user?.username}</p>
             <p className="mt-2 text-gray-500">{user?.email}</p>
             <div className="mt-4 inline-flex items-center px-3 py-1 rounded-full bg-purple-100 text-purple-800">
               {user?.role}

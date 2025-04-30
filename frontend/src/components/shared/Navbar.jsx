@@ -41,18 +41,10 @@ const Navbar = () => {
               <>
                 <li>
                   <Link
-                    to="/admin/blogs"
+                    to="/admin/myBlogs"
                     className="hover:text-yellow-400 transition-colors duration-200"
                   >
                     Manage Blogs
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/admin/users"
-                    className="hover:text-yellow-400 transition-colors duration-200"
-                  >
-                    Manage Users
                   </Link>
                 </li>
               </>
@@ -74,16 +66,6 @@ const Navbar = () => {
                     Blogs
                   </Link>
                 </li>
-                {user && (
-                  <li>
-                    <Link
-                      to="/my-blogs"
-                      className="hover:text-yellow-400 transition-colors duration-200"
-                    >
-                      My Blogs
-                    </Link>
-                  </li>
-                )}
               </>
             )}
           </ul>

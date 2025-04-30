@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import Navbar from '../shared/Navbar';
-import Footer from '../shared/Footer';
 import { Card } from '../ui/card';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,7 +27,6 @@ const AdminDashboard = () => {
           {/* Add more stats cards as needed */}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
