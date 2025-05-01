@@ -34,7 +34,10 @@ export const createBlog = createAsyncThunk(
   "blogs/createBlog",
   async (blogData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/blog/create", blogData);
+      const response = await axiosInstance.post("/blog/create", blogData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },});
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -49,7 +52,10 @@ export const updateBlog = createAsyncThunk(
   async ({ id, blogData }, { rejectWithValue }) => {
     try {
       
-      const response = await axiosInstance.put(`/blog/update/${id}`, blogData);
+      const response = await axiosInstance.put(`/blog/update/${id}`, blogData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },});
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
