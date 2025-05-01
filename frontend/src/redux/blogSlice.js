@@ -34,18 +34,9 @@ export const createBlog = createAsyncThunk(
   "blogs/createBlog",
   async (blogData, { rejectWithValue }) => {
     try {
-      const formData = new FormData();
-      Object.keys(blogData).forEach((key) => {
-        if (blogData[key] !== null) {
-          formData.append(key, blogData[key]);
-        }
-      });
 
-      const response = await axiosInstance.post("/blog/create", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+
+      const response = await axiosInstance.post("/blog/create", blogData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
