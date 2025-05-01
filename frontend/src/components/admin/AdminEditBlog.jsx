@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogById, updateBlog } from "../redux/blogSlice";
-
+import { fetchBlogById, updateBlog } from "../../redux/blogSlice";
+import Navbar from "../shared/Navbar";
 const AdminEditBlog = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -17,104 +17,150 @@ const AdminEditBlog = () => {
   const [featureImage, setFeatureImage] = useState(null);
 
   useEffect(() => {
-    dispatch(fetchBlogById(id));
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (currentBlog) {
+    // If currentBlog is not set or its id doesn't match, fetch it
+    if (!currentBlog || currentBlog._id !== id) {
+      dispatch(fetchBlogById(id))
+        .unwrap()
+        .then((data) => {
+          setTitle(data.title || "");
+          setDescription(data.description || "");
+          setContent(data.content || "");
+          setCategory(data.category || "");
+        })
+        .catch((err) => console.error("Failed to load blog:", err));
+    } else {
       setTitle(currentBlog.title || "");
       setDescription(currentBlog.description || "");
       setContent(currentBlog.content || "");
       setCategory(currentBlog.category || "");
     }
-  }, [currentBlog]);
+  }, [dispatch, id, currentBlog]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const blogData = new FormData();
-    blogData.append("title", title);
-    blogData.append("description", description);
-    blogData.append("content", content);
-    blogData.append("category", category);
+    let payload;
     if (featureImage) {
-      blogData.append("featureImage", featureImage);
+      // Use FormData if there's a feature image being updated
+      payload = new FormData();
+      payload.append("title", title);
+      payload.append("description", description);
+      payload.append("content", content);
+      payload.append("category", category);
+      payload.append("featureImage", featureImage);
+    } else {
+      // Regular payload when no new feature image
+      payload = {
+        title,
+        description,
+        content,
+        category,
+      };
     }
 
-    await dispatch(updateBlog({ id, blogData }));
-    navigate("/admin/blogs"); // redirect after update
+    try {
+      await dispatch(updateBlog({ id, blogData: payload })).unwrap();
+      navigate("/admin/myBlogs");
+    } catch (err) {
+      console.error("Update failed:", err);
+      alert("Failed to update blog. Please try again.");
+    }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">Edit Blog</h2>
+    <>
+    <Navbar />
+    <div className="max-w-4xl mx-auto p-6 mt-4 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Edit Blog</h2>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-600">{error.message}</p>}
+      {loading && <p className="text-center text-gray-600">Loading...</p>}
+      {error && <p className="text-center text-red-600">{error.message}</p>}
 
-      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
+        encType="multipart/form-data"
+      >
         <div>
-          <label className="block text-sm font-medium">Title</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Title
+          </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border rounded-lg px-4 py-3 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Description</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Description
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full border rounded px-3 py-2"
-            rows="3"
+            className="w-full border rounded-lg px-4 py-3 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            rows="4"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Content</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Content
+          </label>
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border rounded-lg px-4 py-3 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             rows="6"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Category</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Category
+          </label>
           <input
             type="text"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full border rounded px-3 py-2"
+            className="w-full border rounded-lg px-4 py-3 mt-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Feature Image</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Feature Image
+          </label>
+          {currentBlog?.featureImage && (
+            <img
+              src={currentBlog.featureImage}
+              alt="Current Feature"
+              className="w-32 h-20 object-cover rounded-lg mb-4"
+            />
+          )}
           <input
             type="file"
             accept="image/*"
             onChange={(e) => setFeatureImage(e.target.files[0])}
-            className="w-full"
+            className="w-full bg-gray-200 border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         <button
           type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
         >
           Update Blog
         </button>
       </form>
     </div>
+    </>
   );
 };
 

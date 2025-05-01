@@ -27,22 +27,6 @@ const Footer = () => {
               </li>
               <li>
                 <a
-                  href="/about"
-                  className="hover:text-yellow-400 transition-colors duration-300"
-                >
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contact"
-                  className="hover:text-yellow-400 transition-colors duration-300"
-                >
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a
                   href="/blog"
                   className="hover:text-yellow-400 transition-colors duration-300"
                 >

@@ -38,15 +38,24 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
     if (!formData.profileImage) {
       toast.error("Profile image is required.");
       return;
     }
-
-    setLoading(true); // Start loading
-
-    dispatch(registerUser(formData))
+  
+    setLoading(true);
+  
+    // Create a FormData object
+    const data = new FormData();
+    data.append("name", formData.name);
+    data.append("username", formData.username);
+    data.append("email", formData.email);
+    data.append("password", formData.password);
+    data.append("role", formData.role);
+    data.append("profileImage", formData.profileImage); // Profile image file
+  
+    dispatch(registerUser(data))  // Send FormData to the backend
       .then(() => {
         toast.success("Account created successfully");
         navigate("/login");
@@ -54,8 +63,9 @@ const Signup = () => {
       .catch(() => {
         toast.error("Registration failed.");
       })
-      .finally(() => setLoading(false)); // Stop loading
+      .finally(() => setLoading(false));
   };
+  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">

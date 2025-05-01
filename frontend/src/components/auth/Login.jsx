@@ -17,14 +17,15 @@ const Login = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const { loading, error, user, token, isSuccess } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user) {
+    if (isSuccess && user && token) {
       toast.success("Login Successful");
-      navigate(user.role === 'admin' ? '/admin' : '/');
+      navigate(user.role === "admin" ? "/admin" : "/");
     }
-  }, [user, navigate]);
+  }, [isSuccess, user, token, navigate]);
+  
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,7 +51,7 @@ const Login = () => {
               {error.message || "Invalid credentials"}
             </div>
           )}
-          
+
           <div className="mb-4">
             <Label className="block text-sm font-medium text-gray-700">Email</Label>
             <Input
@@ -59,7 +60,7 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full"
             />
           </div>
 
@@ -71,17 +72,13 @@ const Login = () => {
               value={formData.password}
               onChange={handleChange}
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-1 block w-full"
             />
           </div>
 
           <div className="mb-6">
             <Label className="block text-sm font-medium text-gray-700">Role</Label>
-            <RadioGroup
-              value={formData.role}
-              onValueChange={handleRoleChange}
-              required
-            >
+            <RadioGroup value={formData.role} onValueChange={handleRoleChange} required>
               <div className="flex gap-4">
                 <RadioGroupItem value="user" id="user" />
                 <Label htmlFor="user" className="text-sm text-gray-700">User</Label>
@@ -94,17 +91,14 @@ const Login = () => {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700"
           >
             {loading ? "Logging in..." : "Login"}
           </Button>
         </form>
 
         <div className="mt-4 text-center">
-          <Link
-            to="/register"
-            className="text-sm text-blue-300 hover:text-blue-700"
-          >
+          <Link to="/register" className="text-sm text-blue-300 hover:text-blue-700">
             Don't have an account? Sign up
           </Link>
         </div>

@@ -3,13 +3,13 @@ import Login from "./components/auth/Login";
 import Signup from "./components/auth/Signup";
 import Home from "./components/pages/Home";
 import Profile from "./components/pages/Profile";
-import BlogCard from "./components/blog/BlogCard";
 import BlogDetails from "./components/blog/BlogDetails";
-import BlogForm from "./components/admin/AdminCreateBlog";
-import MyBlogs from "./components/admin/AdminBlogs";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import ProtectedRoute from "./components/admin/ProtectedRoute";
 import Blogs from "./components/blog/Blogs";
+import AdminBlogs from "./components/admin/AdminBlogs";
+import AdminEditBlog from "./components/admin/AdminEditBlog";
+import AdminCreateBlog from "./components/admin/AdminCreateBlog";
 
 const appRouter = createBrowserRouter([
   {
@@ -36,22 +36,6 @@ const appRouter = createBrowserRouter([
     path: "/blogs",
     element: <Blogs/>,
   },
-  {
-    path: "/admin/create-blog",
-    element: (
-      <ProtectedRoute role="admin">
-        <BlogForm />
-      </ProtectedRoute>
-    ),
-  },
-  {
-    path: "/admin/myBlogs",
-    element: (
-      <ProtectedRoute role="admin">
-        <MyBlogs />
-      </ProtectedRoute>
-    ),
-  },
   
   {
     path: "/admin",
@@ -61,6 +45,31 @@ const appRouter = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: "/admin/myBlogs",
+    element: (
+      <ProtectedRoute role="admin">
+        <AdminBlogs />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/create-blog",
+    element: (
+      <ProtectedRoute role="admin">
+        <AdminCreateBlog />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/edit-blog/:id",
+    element: (
+      <ProtectedRoute role="admin">
+        <AdminEditBlog />
+      </ProtectedRoute>
+    ),
+  },
+  
 ]);
 
 function App() {

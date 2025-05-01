@@ -5,19 +5,9 @@ import { toast } from "sonner";
 import { createBlog } from "../../redux/blogSlice";
 
 import Navbar from "../shared/Navbar";
-import Footer from "../shared/Footer";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Button } from "../ui/button";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../ui/select";
-
-const categories = ["Astrology", "Horoscope", "Vastu", "Education", "Others"];
 
 const AdminCreateBlog = () => {
   const dispatch = useDispatch();
@@ -52,24 +42,20 @@ const AdminCreateBlog = () => {
     }
   };
 
-  const handleCategoryChange = (value) => {
-    setFormData((prev) => ({ ...prev, category: value }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // const data = new FormData();
-    // data.append("title", formData.title);
-    // data.append("description", formData.description);
-    // data.append("content", formData.content);
-    // data.append("category", formData.category);
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("content", formData.content);
+    data.append("category", formData.category);
     if (formData.featureImage) {
-      formData.featureImage= featureImage;
+      data.append("featureImage", formData.featureImage);
     }
-
+    
     try {
-      await dispatch(createBlog(formData)).unwrap();
+      await dispatch(createBlog(data)).unwrap();
       toast.success("Blog created successfully");
       navigate("/admin/myBlogs");
     } catch (error) {
@@ -80,88 +66,86 @@ const AdminCreateBlog = () => {
   return (
     <>
       <Navbar />
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Create New Blog</h1>
+      <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg mt-8">
+        <h1 className="text-4xl font-semibold text-center text-gray-800 mb-6">Create New Blog</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <Label htmlFor="title">Title</Label>
+            <Label htmlFor="title" className="block text-lg font-medium text-gray-700 mb-2">Title</Label>
             <Input
               id="title"
               name="title"
               value={formData.title}
               onChange={handleChange}
+              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="block text-lg font-medium text-gray-700 mb-2">Description</Label>
             <Input
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
+              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               required
             />
           </div>
 
           <div>
-            <Label htmlFor="content">Content</Label>
+            <Label htmlFor="content" className="block text-lg font-medium text-gray-700 mb-2">Content</Label>
             <textarea
               id="content"
               name="content"
               value={formData.content}
               onChange={handleChange}
               required
-              className="w-full min-h-[200px] p-3 border rounded-md border-gray-300"
+              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 min-h-[200px]"
             />
           </div>
 
           <div>
-            <Label htmlFor="category">Category</Label>
-            <Select onValueChange={handleCategoryChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <input type="hidden" name="category" value={formData.category} />
+            <Label htmlFor="category" className="block text-lg font-medium text-gray-700 mb-2">Category</Label>
+            <Input
+              id="category"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              placeholder="Enter category"
+              required
+            />
           </div>
 
           <div>
-            <Label htmlFor="featureImage">Feature Image</Label>
+            <Label htmlFor="featureImage" className="block text-lg font-medium text-gray-700 mb-2">Feature Image</Label>
             <Input
               id="featureImage"
               name="featureImage"
               type="file"
               accept="image/*"
               onChange={handleChange}
+              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
             {previewImage && (
               <img
                 src={previewImage}
                 alt="Preview"
-                className="mt-3 h-32 rounded-md object-cover"
+                className="mt-4 w-full h-auto rounded-md shadow-md object-cover"
               />
             )}
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-purple-600 hover:bg-purple-700"
+            className="w-full bg-purple-600 text-white py-3 px-6 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
             disabled={loading}
           >
             {loading ? "Submitting..." : "Create Blog"}
           </Button>
         </form>
       </div>
-      <Footer />
     </>
   );
 };
