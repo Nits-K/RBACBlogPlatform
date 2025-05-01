@@ -5,23 +5,24 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const createBlogPost = asyncHandler(async (req, res) => {
+  console.log(req);
+  
+console.log(req.body);
+
+  
   const { title, content, description, category } = req.body;
   const userId = req.user._id;
 
-  if (
-    [title, content, description, category].some(
-      (field) => field?.trim() === ""
-    )
-    
-  ) {
+  if ([title, content, description, category].some(field => field?.trim() === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
+  let uploadedImage = null; // ✅ Declare outside
 
   if (req.files?.featureImage) {
     try {
       const imagePath = req.files.featureImage[0].path;
-      const uploadedImage = await uploadOnCloudinary(imagePath);
+      uploadedImage = await uploadOnCloudinary(imagePath); // ✅ assign to outer variable
     } catch (error) {
       throw new ApiError(500, "Error uploading image to cloud");
     }
@@ -33,7 +34,7 @@ export const createBlogPost = asyncHandler(async (req, res) => {
     owner: userId,
     description,
     category,
-    featureImage: uploadedImage,
+    featureImage: uploadedImage?.secure_url || "", // ✅ make sure it’s a string
   });
 
   return res
@@ -78,6 +79,8 @@ export const getBlogPostById = asyncHandler(async (req, res) => {
 
 export const updateBlogPost = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  
+  
   const { title, content, description, category } = req.body;
   const userId = req.user._id;
 
@@ -99,7 +102,7 @@ export const updateBlogPost = asyncHandler(async (req, res) => {
   if (req.files?.featureImage) {
     const imagePath = req.files.featureImage[0].path;
     const uploadedImage = await uploadOnCloudinary(imagePath);
-    post.featureImage = uploadedImage?.url;
+    post.featureImage = uploadedImage?.secure_url || post.featureImage;
   }
 
   await post.save();
