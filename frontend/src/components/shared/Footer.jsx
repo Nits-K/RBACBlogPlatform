@@ -1,13 +1,21 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux"; // Make sure to import the useSelector hook
 
 const Footer = () => {
+  const { user } = useSelector((state) => state.auth); // Get user info from the redux store
+
   return (
-    <footer className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-12 text-white">
+    <footer className="bg-gradient-to-r from-indigo-500 via-purple-700 to-pink-700 py-12 text-white">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-center">
           {/* Left section */}
           <div className="text-center sm:text-left">
-            <h2 className="text-3xl font-semibold">BlogVillage</h2>
+            <Link to={user?.role === "admin" ? "/admin" : "/"}>
+              <h2 className="text-3xl font-semibold text-white">
+                Blog<span className="text-yellow-400">Village</span>
+              </h2>
+            </Link>
             <p className="text-sm opacity-75 mt-2">
               © {new Date().getFullYear()} All rights reserved.
             </p>
@@ -18,12 +26,12 @@ const Footer = () => {
             <p className="text-lg font-medium">Quick Links</p>
             <ul className="space-y-2 mt-2">
               <li>
-                <a
-                  href="/"
+                <Link
+                  to={user?.role === "admin" ? "/admin" : "/"}
                   className="hover:text-yellow-400 transition-colors duration-300"
                 >
                   Home
-                </a>
+                </Link>
               </li>
               <li>
                 <a

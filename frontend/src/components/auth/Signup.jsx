@@ -65,49 +65,86 @@ const Signup = () => {
       })
       .finally(() => setLoading(false));
   };
-  
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-600 to-pink-600 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
         <h1 className="text-2xl font-semibold text-center text-gray-700 mb-6">Sign Up</h1>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+          <div className="mb-5">
             <Label>Name</Label>
-            <Input name="name" value={formData.name} onChange={handleChange} required />
+            <Input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+              className="mt-2 p-2 w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <Label>Username</Label>
-            <Input name="username" value={formData.username} onChange={handleChange} required />
+            <Input
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required
+              className="mt-2 p-2 w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <Label>Email</Label>
-            <Input name="email" type="email" value={formData.email} onChange={handleChange} required />
+            <Input
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="mt-2 p-2 w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <Label>Password</Label>
-            <Input name="password" type="password" value={formData.password} onChange={handleChange} required />
+            <Input
+              name="password"
+              type="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="mt-2 p-2 w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-5">
             <Label>Profile Image</Label>
-            <Input type="file" onChange={handleFileChange} accept="image/*" required />
+            <Input
+              type="file"
+              onChange={handleFileChange}
+              accept="image/*"
+              required
+              className="mt-2 p-2 w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-5">
             <Label>Role</Label>
             <RadioGroup value={formData.role} onValueChange={handleRoleChange}>
-              <div className="flex gap-4 mt-2">
-                <RadioGroupItem value="user" id="user" />
-                <Label htmlFor="user">User</Label>
-                <RadioGroupItem value="admin" id="admin" />
-                <Label htmlFor="admin">Admin</Label>
+              <div className="flex gap-6 mt-2">
+                <div className="flex items-center">
+                  <RadioGroupItem value="user" id="user" />
+                  <Label htmlFor="user" className="ml-2">User</Label>
+                </div>
+                <div className="flex items-center">
+                  <RadioGroupItem value="admin" id="admin" />
+                  <Label htmlFor="admin" className="ml-2">Admin</Label>
+                </div>
               </div>
             </RadioGroup>
           </div>
+
+          
 
           <Button
             type="submit"
@@ -120,7 +157,7 @@ const Signup = () => {
           </Button>
         </form>
 
-        <div className="mt-4 text-center">
+        <div className="mt-6 text-center">
           <Link to="/login" className="text-sm text-blue-400 hover:text-blue-700">
             Already have an account? Login
           </Link>

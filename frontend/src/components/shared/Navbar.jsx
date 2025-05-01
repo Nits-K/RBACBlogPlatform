@@ -28,12 +28,14 @@ const Navbar = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+    <div className="bg-gradient-to-r from-purple-700 to-pink-700 "> {/* Added shadow-lg */}
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16 p-4">
         <div>
-          <h1 className="text-3xl font-semibold text-white">
-            Blog<span className="text-yellow-400">Village</span>
-          </h1>
+          <Link to="/admin">
+            <h1 className="text-3xl font-semibold text-white">
+              Blog<span className="text-yellow-400">Village</span>
+            </h1>
+          </Link>
         </div>
         <div className="flex items-center gap-12">
           <ul className="flex font-medium text-white items-center gap-6">
@@ -41,10 +43,26 @@ const Navbar = () => {
               <>
                 <li>
                   <Link
+                    to="/admin"
+                    className="hover:text-yellow-400 transition-colors duration-200"
+                  >
+                    Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     to="/admin/myBlogs"
                     className="hover:text-yellow-400 transition-colors duration-200"
                   >
-                    Manage Blogs
+                    My Blogs
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/blogs"
+                    className="hover:text-yellow-400 transition-colors duration-200"
+                  >
+                    Blogs
                   </Link>
                 </li>
               </>

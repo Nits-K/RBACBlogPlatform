@@ -1,20 +1,31 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "../shared/Navbar";
 import Footer from "../shared/Footer";
 import { Button } from "../ui/button";
 import { ArrowRight } from "lucide-react";
+import { fetchBlogs } from "../../redux/blogSlice";
+import BlogCard from "../blog/BlogCard"; // Adjust the path if needed
 
 const Home = () => {
-  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const { user } = useSelector((state) => state.auth);
+  const { blogs, loading } = useSelector((state) => state.blogs);
 
   useEffect(() => {
     if (user?.role === "admin") {
       navigate("/admin/");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    dispatch(fetchBlogs());
+  }, [dispatch]);
+
+  const featuredBlogs = blogs.slice(0, 6); // First 6 blogs
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -63,6 +74,16 @@ const Home = () => {
               Read the latest stories from our community
             </p>
           </div>
+
+          {loading ? (
+            <p className="text-center text-gray-500">Loading...</p>
+          ) : (
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredBlogs.map((blog) => (
+                <BlogCard key={blog._id} blog={blog} />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

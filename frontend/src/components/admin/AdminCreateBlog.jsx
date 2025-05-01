@@ -126,13 +126,13 @@ const AdminCreateBlog = () => {
               type="file"
               accept="image/*"
               onChange={handleChange}
-              className="w-full p-4 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
             />
             {previewImage && (
               <img
                 src={previewImage}
                 alt="Preview"
-                className="mt-4 w-full h-auto rounded-md shadow-md object-cover"
+                className="mt-4 mx-auto w-32 h-32 rounded-md shadow-md object-cover"
               />
             )}
           </div>
