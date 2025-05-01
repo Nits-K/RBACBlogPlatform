@@ -53,14 +53,15 @@ const BlogDetails = () => {
 
         {/* Feature Image */}
         {blog.featureImage && (
-          <div className="mb-8">
-            <img
-              src={blog.featureImage}
-              alt={blog.title}
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
-            />
-          </div>
-        )}
+  <div className="mb-8">
+    <img
+      src={blog.featureImage}
+      alt={blog.title}
+      className="w-96 h-96 object-contain sm:object-cover rounded-lg shadow-lg"
+    />
+  </div>
+)}
+
 
         {/* Blog Content */}
         <div className="prose max-w-none">
