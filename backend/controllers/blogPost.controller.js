@@ -34,7 +34,7 @@ console.log(req.body);
     owner: userId,
     description,
     category,
-    featureImage: uploadedImage?.secure_url || "", // ✅ make sure it’s a string
+    featureImage: uploadedImage, // ✅ make sure it’s a string
   });
 
   return res
@@ -102,7 +102,7 @@ export const updateBlogPost = asyncHandler(async (req, res) => {
   if (req.files?.featureImage) {
     const imagePath = req.files.featureImage[0].path;
     const uploadedImage = await uploadOnCloudinary(imagePath);
-    post.featureImage = uploadedImage?.secure_url || post.featureImage;
+    post.featureImage = uploadedImage;
   }
 
   await post.save();
