@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../utils/constant";
 
+// Thunks
 export const fetchBlogById = createAsyncThunk(
   "blogs/fetchBlogById",
   async (id, { rejectWithValue }) => {
@@ -20,7 +21,6 @@ export const fetchBlogs = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get("/blog/getBlogs");
-      console.log("Fetched blogs from backend:", response.data.data); // ✅ Add this      
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -34,10 +34,7 @@ export const createBlog = createAsyncThunk(
   "blogs/createBlog",
   async (blogData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/blog/create", blogData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },});
+      const response = await axiosInstance.post("/blog/create", blogData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -51,11 +48,7 @@ export const updateBlog = createAsyncThunk(
   "blogs/updateBlog",
   async ({ id, blogData }, { rejectWithValue }) => {
     try {
-      
-      const response = await axiosInstance.put(`/blog/update/${id}`, blogData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },});
+      const response = await axiosInstance.put(`/blog/update/${id}`, blogData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -79,6 +72,7 @@ export const deleteBlog = createAsyncThunk(
   }
 );
 
+// Slice
 const blogSlice = createSlice({
   name: 'blogs',
   initialState: {
