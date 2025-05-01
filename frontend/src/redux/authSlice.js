@@ -20,7 +20,11 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/users/register", formData);
+      const response = await axiosInstance.post("/users/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return response.data.data; // contains { user, token }
     } catch (error) {
       const message =

@@ -17,13 +17,11 @@ export const createBlogPost = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  let featureImageUrl = null;
 
   if (req.files?.featureImage) {
     try {
       const imagePath = req.files.featureImage[0].path;
       const uploadedImage = await uploadOnCloudinary(imagePath);
-      featureImageUrl = uploadedImage?.url;
     } catch (error) {
       throw new ApiError(500, "Error uploading image to cloud");
     }
@@ -35,7 +33,7 @@ export const createBlogPost = asyncHandler(async (req, res) => {
     owner: userId,
     description,
     category,
-    featureImage: featureImageUrl,
+    featureImage: uploadedImage,
   });
 
   return res
