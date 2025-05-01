@@ -1,30 +1,53 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Navbar from '../shared/Navbar';
 import Footer from '../shared/Footer';
+import { fetchBlogById } from "../../redux/blogSlice";
 
 const BlogDetails = () => {
   const { id } = useParams();
-  const { blogs } = useSelector((state) => state.blogs);
-  const [blog, setBlog] = useState(null);
+  const dispatch = useDispatch();
+
+  const { blogs, currentBlog, loading, error } = useSelector((state) => state.blogs);
 
   useEffect(() => {
-    const foundBlog = blogs.find(b => b._id === id);
-    setBlog(foundBlog);
-  }, [blogs, id]);
+    const foundBlog = blogs.find((b) => b._id === id);
 
-  if (!blog) {
+    if (foundBlog) {
+      // Use it if already in blogs array
+      dispatch({ type: 'blogs/setCurrentBlog', payload: foundBlog });
+    } else {
+      // Otherwise fetch from API
+      dispatch(fetchBlogById(id));
+    }
+  }, [dispatch, blogs, id]);
+
+  if (loading) {
     return (
       <>
         <Navbar />
         <div className="min-h-screen flex items-center justify-center">
-          <p className="text-gray-700">Blog not found</p>
+          <p className="text-gray-500">Loading blog...</p>
         </div>
         <Footer />
       </>
     );
   }
+
+  if (error || !currentBlog) {
+    return (
+      <>
+        <Navbar />
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-red-500">Blog not found or failed to load.</p>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  const blog = currentBlog;
 
   return (
     <>
@@ -36,11 +59,11 @@ const BlogDetails = () => {
           <div className="flex items-center gap-4 text-gray-600 mt-4">
             <div className="flex items-center gap-2">
               <img
-                src={blog.owner.profileImage || '/default-avatar.png'}
-                alt={blog.owner.name}
+                src={blog.owner?.profileImage || '/default-avatar.png'}
+                alt={blog.owner?.name}
                 className="w-8 h-8 rounded-full"
               />
-              <span>{blog.owner.name}</span>
+              <span>{blog.owner?.name}</span>
             </div>
             <span>•</span>
             <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
@@ -53,15 +76,14 @@ const BlogDetails = () => {
 
         {/* Feature Image */}
         {blog.featureImage && (
-  <div className="mb-8">
-    <img
-      src={blog.featureImage}
-      alt={blog.title}
-      className="w-96 h-96 object-contain sm:object-cover rounded-lg shadow-lg"
-    />
-  </div>
-)}
-
+          <div className="mb-8">
+            <img
+              src={blog.featureImage}
+              alt={blog.title}
+              className="w-120 h-120 object-contain sm:object-cover rounded-lg shadow-lg"
+            />
+          </div>
+        )}
 
         {/* Blog Content */}
         <div className="prose max-w-none">
