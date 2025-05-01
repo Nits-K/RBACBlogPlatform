@@ -59,17 +59,17 @@ const AdminCreateBlog = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("content", formData.content);
-    data.append("category", formData.category);
+    // const data = new FormData();
+    // data.append("title", formData.title);
+    // data.append("description", formData.description);
+    // data.append("content", formData.content);
+    // data.append("category", formData.category);
     if (formData.featureImage) {
-      data.append("featureImage", formData.featureImage);
+      formData.featureImage= featureImage;
     }
 
     try {
-      await dispatch(createBlog(data)).unwrap();
+      await dispatch(createBlog(formData)).unwrap();
       toast.success("Blog created successfully");
       navigate("/admin/myBlogs");
     } catch (error) {
