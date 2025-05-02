@@ -1,16 +1,12 @@
-import React from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "../ui/button";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User2, LogOut } from "lucide-react";
+import { User2, LogOut, Menu, X } from "lucide-react"; // Added icons for hamburger menu
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import { toast } from "sonner";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
@@ -27,8 +23,11 @@ const Navbar = () => {
     }
   };
 
+  // State to control mobile menu visibility
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <div className="bg-gradient-to-r from-purple-700 to-pink-700 "> {/* Added shadow-lg */}
+    <div className="bg-gradient-to-r from-purple-700 to-pink-700">
       <div className="flex items-center justify-between mx-auto max-w-7xl h-16 p-4">
         <div>
           <Link to="/admin">
@@ -38,7 +37,8 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="flex items-center gap-12">
-          <ul className="flex font-medium text-white items-center gap-6">
+          {/* Desktop Menu */}
+          <ul className="hidden md:flex font-medium text-white items-center gap-6">
             {user?.role === "admin" ? (
               <>
                 <li>
@@ -88,6 +88,73 @@ const Navbar = () => {
             )}
           </ul>
 
+          {/* Hamburger Menu for Mobile */}
+          <button
+            className="md:hidden text-white"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <ul className="absolute top-16 right-0 bg-gradient-to-r from-purple-700 to-pink-700 w-full p-6 md:hidden flex flex-col items-center gap-4">
+              {user?.role === "admin" ? (
+                <>
+                  <li>
+                    <Link
+                      to="/admin"
+                      className="text-white hover:text-yellow-400 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/admin/myBlogs"
+                      className="text-white hover:text-yellow-400 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      My Blogs
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/blogs"
+                      className="text-white hover:text-yellow-400 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Blogs
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      to="/"
+                      className="text-white hover:text-yellow-400 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/blogs"
+                      className="text-white hover:text-yellow-400 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Blogs
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
+          )}
+
+          {/* User Profile or Login/Signup */}
           {!user ? (
             <div className="flex items-center gap-4">
               <Link to="/login">
@@ -109,6 +176,7 @@ const Navbar = () => {
               <PopoverTrigger>
                 <Avatar className="cursor-pointer border-2 border-white">
                   <AvatarImage
+                    className="w-18"
                     src={user.profileImage || `/default-avatar.png`}
                     alt={user.name}
                   />

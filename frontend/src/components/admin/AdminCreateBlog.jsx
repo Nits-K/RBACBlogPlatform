@@ -138,12 +138,16 @@ const AdminCreateBlog = () => {
           </div>
 
           <Button
-            type="submit"
-            className="w-full bg-purple-600 text-white py-3 px-6 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            disabled={loading}
-          >
-            {loading ? "Submitting..." : "Create Blog"}
-          </Button>
+  type="submit"
+  className="w-full bg-purple-600 text-white py-3 px-6 rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 flex items-center justify-center gap-2"
+  disabled={loading}
+>
+  {loading && (
+    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  )}
+  {loading ? "Submitting..." : "Create Blog"}
+</Button>
+
         </form>
       </div>
     </>

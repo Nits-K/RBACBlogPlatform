@@ -153,11 +153,16 @@ const AdminEditBlog = () => {
         </div>
 
         <button
-          type="submit"
-          className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
-        >
-          Update Blog
-        </button>
+  type="submit"
+  disabled={loading}
+  className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center justify-center gap-2"
+>
+  {loading && (
+    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  )}
+  {loading ? "Updating..." : "Update Blog"}
+</button>
+
       </form>
     </div>
     </>
